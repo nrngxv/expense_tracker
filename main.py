@@ -10,6 +10,7 @@ from data_entry import get_date, get_amount, get_category, get_description
 class CSV:
     CSV_FILE = "finance_data.csv"
     COLUMNS = ["date", "amount", "category", "description"]
+    FORMAT = "%d-%m-%Y"
 
     @classmethod
     #this is to load the CSV file, and structure it
@@ -34,6 +35,38 @@ class CSV:
             writer = csv.DictWriter(csvfile, fieldnames = cls.COLUMNS)
             writer.writerow(new_entry)
         print("Enter added successfully")
+
+    @classmethod
+    #accessing the list of transactions.
+    def get_transaction(cls, start_date, end_date):
+        df = pd.read_csv(cls.CSV_file) #reading from the CSV file throught the method
+        df["date"] = pd.to_datetime(df["date"], format=CSV.FORMAT) #accessing rows for date, converting them into objects
+
+        #it converts the str value to a obj which makes it easier to filter through dates
+        start_date = datetime.strptime(start_date, CSV.FORMAT) #converting startdate from str to obj
+        end_date = datetime.strptime(end_date,CSV.FORMAT) #same here too, str to obj
+
+        #
+        mask = (df["date"] >= start_date) & (df["date"] <= end_date)
+        #location where the var mask is true
+        filtered_df = df.loc[mask]
+
+        if filtered_df.empty:
+            print("No transaction forund in the given date range")
+        else:
+            print(f"Transactions form {start_date.strftime(CSV.FORMAT)} to {end_date.strftime(CSV.FORMAT)}")
+            print(filtered_df.to_string(index=False, formatters={"date": lambda x: x.strftime(CSV.FORMAT)}))
+
+            #This sorts through the filtered_df, where the category is income and takes the amount and sums them
+            total_income = filtered_df[filtered_df["category"] == "Income"]["amount"].sum()
+            total_expense = filtered_df[filtered_df["category"] == "Expense"]["amount"].sum()
+
+            print("\nSummary: ")
+            print(f"Total Income: {total_income:.2f} rupees")
+            print(f"Total Expense: {total_expense:.2f} rupees")
+            print(f"Net saving")
+
+
 
 def add():
     CSV.initialise_csv()
