@@ -7,6 +7,7 @@ from datetime import datetime
 from data_entry import get_date, get_amount, get_category, get_description
 import matplotlib.pyplot as plt
 
+
 #store data in a .csv file
 class CSV:
     CSV_FILE = "finance_data.csv"
@@ -43,7 +44,8 @@ class CSV:
 
         #reading from the CSV file throught the method
         df = pd.read_csv(cls.CSV_FILE)
-        df["date"] = pd.to_datetime(df["date"], format=CSV.FORMAT) #accessing rows for date, converting them into objects
+        #accessing rows for date, converting them into objects
+        df["date"] = pd.to_datetime(df["date"], format=CSV.FORMAT)
 
         #it converts the str value to a obj which makes it easier to filter through dates
         start_date = datetime.strptime(start_date, CSV.FORMAT) #converting startdate from str to obj
@@ -71,14 +73,18 @@ class CSV:
             print(f"Total Expense: {total_expense:.2f} rupees")
             print(f"Net saving: {(total_income - total_expense):.2f} rupees")
 
-
+#making a graph plot using matplotlib
 def plot_transactions(df):
-    df.set_index("date", inplace=True)
+    df.set_index("date", inplace=True) #inplace set:True to return "None"
 
+    #this creates income_df with "category rows" with only income
     income_df = df[df["category"] == "Income"].resample("D").sum().reindex(df.index, fill_value=0)
+
+    #this creates income_df with "category rows" with only expense
     expense_df = df[df["category"] == "Expense"].resample("D").sum().reindex(df.index, fill_value=0)
 
-    plt.figure(figsize=(10, 5))
+    plt.figure(figsize=(10, 5)) #setting the size of the graph
+
     plt.plot(income_df.index, income_df["amount"], label="Income", colour="g")
     plt.plot(expense_df.index, expense_df["amount"], label="Expense", colour="g")
     plt.xlabel("Date")
@@ -89,6 +95,7 @@ def plot_transactions(df):
     plt.show()
 
 
+#adding transactions
 def add():
     CSV.initialise_csv()
     date = get_date("Enter the date of the transaction (dd-mm-YYYY format) or enter today's date: ", allow_default=True)
@@ -98,7 +105,7 @@ def add():
     CSV.add_entry(date, amount, category, description)
 
 
-#view different transactions
+#main flow
 def main():
     while True:
         print("\n1. Add a new transaction")
@@ -114,7 +121,7 @@ def main():
             end_date = get_date("Enter the end date (dd-mm-YYYY): ")
 
             #now we just need to pass the data to our file
-            df = CSV.get_transaction(start_date, end_date) #putting df for plotting in a graph
+            df = CSV.get_transaction(start_date, end_date) #putting df for plotting in a graph  
             if input("Do you want to see a plot? (y/n): ").lower() == "y":
                 plot_transactions(df)
 
@@ -124,8 +131,6 @@ def main():
         else:
             print("Invalid choice. Enter 1, 2 or 3.")
 
-
+#prevents from directly running the file
 if __name__ == "__main__":
     main()
-           
-#TODO: create a nice interface to view transactions
