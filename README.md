@@ -1,5 +1,5 @@
 # A simple expense tracker
-This tracker takes the user's input and assigns a label to it (As an expenditure or a income). Then produces a list of the expenses (and also income) and puts it in a CSV file in your local machine. The data is structure using the The data is structured using the pandas. And the data can be displayed as a plot using matplotlib
+This tracker takes the user's input and assigns a label to it (As an expenditure or a income). Then produces a list of the expenses (and also income) and puts it in a CSV file in your local machine. The data is structure using the The data is structured using the [pandas](https://pandas.pydata.org/). And the data can be displayed as a plot using [matplotlib](https://matplotlib.org/)
 
 ## How to use this?
 First check if you are on the latest version of python or not. Run this in your terminal
